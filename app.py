@@ -1,4 +1,5 @@
 """Streamlit dashboard to explore and filter the Forest Cover Type dataset."""
+import pandas as pd
 import streamlit as st
 
 from src.data import filter_data, load_data
@@ -52,7 +53,10 @@ with col1:
     st.bar_chart(filtered_df["Cover_Type"].value_counts().sort_index())
 with col2:
     st.subheader("Elevation distribution")
-    st.bar_chart(filtered_df["Elevation"].value_counts(bins=20).sort_index())
+    elevation_bins = pd.cut(filtered_df["Elevation"], bins=15)
+    counts = elevation_bins.value_counts().sort_index()
+    counts.index = [f"{int(interval.left)}" for interval in counts.index]
+    st.bar_chart(counts)
 
 st.subheader("Filtered data")
 st.dataframe(filtered_df, use_container_width=True)
